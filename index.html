@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Trích xuất thông tin</title>
+    <style>
+        #input-area {
+            margin-bottom: 20px;
+        }
+
+        #output {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+<h1>Nhập thông tin và trích xuất</h1>
+
+<div id="input-area">
+    <label for="data-input">Nhập dữ liệu:</label>
+    <textarea id="data-input" rows="10" style="width: 100%;" placeholder="Nhập dữ liệu ở đây..."></textarea>
+    <button id="extract-button">Trích xuất</button>
+</div>
+
+<div id="output">
+    <h2>Kết quả:</h2>
+    <ul id="result"></ul>
+</div>
+
+<script>
+    document.getElementById("extract-button").addEventListener("click", function() {
+        const dataInput = document.getElementById("data-input");
+        const result = document.getElementById("result");
+        result.innerHTML = '';
+
+        const data = dataInput.value.trim();
+        const entries = data.split(/\n(?=\S)/);
+
+        entries.forEach((entry, index) => {
+            const lines = entry.split('\n');
+            if (lines.length >= 2) {
+                const link = lines[1].trim();
+                const usernameMatch = link.match(/x\.com\/(\w+)\//);
+                const username = usernameMatch ? `@${usernameMatch[1]}` : "Không tìm thấy tên người dùng";
+                const comment = lines.slice(2).join('\n').trim();
+                const listItem = document.createElement("li");
+                listItem.textContent = `${username} | ${link} | ${comment}`;
+                result.appendChild(listItem);
+            }
+        });
+    });
+</script>
+</body>
+</html>
