@@ -1,55 +1,178 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Trích xuất thông tin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trademark Checker</title>
     <style>
-        #input-area {
+        /* CSS Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        p {
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .form-group {
+            display: flex;
+            gap: 10px;
             margin-bottom: 20px;
         }
 
-        #output {
-            border: 1px solid #ccc;
+        input[type="text"] {
+            flex: 1;
             padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .result {
+            font-size: 16px;
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .success {
+            background-color: #28a745;
+        }
+
+        .error {
+            background-color: #dc3545;
+        }
+
+        .reset-button {
+            background-color: #ff7f50;
+        }
+
+        .reset-button:hover {
+            background-color: #ff6347;
         }
     </style>
 </head>
 <body>
-<h1>Nhập thông tin và trích xuất</h1>
 
-<div id="input-area">
-    <label for="data-input">Nhập dữ liệu:</label>
-    <textarea id="data-input" rows="10" style="width: 100%;" placeholder="Nhập dữ liệu ở đây..."></textarea>
-    <button id="extract-button">Trích xuất</button>
-</div>
+<div class="container">
+    <h1>Trademark Checker</h1>
+    <p>Check if your product name contains any trademarked words.</p>
 
-<div id="output">
-    <h2>Kết quả:</h2>
-    <ul id="result"></ul>
+    <div class="form-group">
+        <input type="text" id="productName" placeholder="Enter product name">
+        <button id="checkBtn">Check Trademark</button>
+        <button id="resetBtn" class="reset-button">Reset</button>
+    </div>
+
+    <div id="result" class="result"></div>
 </div>
 
 <script>
-    document.getElementById("extract-button").addEventListener("click", function() {
-        const dataInput = document.getElementById("data-input");
-        const result = document.getElementById("result");
-        result.innerHTML = '';
+    // JavaScript code to check trademarks
 
-        const data = dataInput.value.trim();
-        const entries = data.split(/\n(?=\S)/);
+    const trademarkedWords = [
+        // Thương hiệu công nghệ
+        "Apple", "Microsoft", "Google", "Facebook", "Instagram", "Twitter", "Amazon",
+        "Netflix", "Tesla", "Intel", "Samsung",
 
-        entries.forEach((entry, index) => {
-            const lines = entry.split('\n');
-            if (lines.length >= 2) {
-                const link = lines[1].trim();
-                const usernameMatch = link.match(/x\.com\/(\w+)\//);
-                const username = usernameMatch ? `@${usernameMatch[1]}` : "Không tìm thấy tên người dùng";
-                const comment = lines.slice(2).join('\n').trim();
-                const listItem = document.createElement("li");
-                listItem.textContent = `${username} | ${link} | ${comment}`;
-                result.appendChild(listItem);
+        // Thương hiệu giải trí
+        "Disney", "Pixar", "Marvel", "Star Wars", "Warner Bros", "Universal Studios",
+        "Nickelodeon", "HBO", "Sony", "Paramount", "DreamWorks",
+
+        // Nghệ sĩ và âm nhạc
+        "Taylor Swift", "Beyoncé", "Lady Gaga", "Justin Bieber", "Ariana Grande",
+        "BTS", "Drake", "Rihanna",
+
+        // Thương hiệu thời trang
+        "Nike", "Adidas", "Puma", "Gucci", "Louis Vuitton", "Prada",
+        "Chanel", "Versace", "Dior", "Balenciaga",
+
+        // Thương hiệu thực phẩm và nước giải khát
+        "Coca-Cola", "Pepsi", "McDonald's", "Starbucks", "KFC", "Subway",
+        "Nestlé", "Red Bull", "Heineken", "Budweiser",
+
+        // Thương hiệu xe hơi
+        "Ferrari", "Lamborghini", "Mercedes-Benz", "BMW", "Toyota",
+        "Ford", "Volkswagen", "Porsche", "Audi", "Honda",
+
+        // Thương hiệu bán lẻ
+        "Walmart", "Target", "IKEA", "H&M", "Zara", "Costco", "Alibaba", "eBay",
+
+        // Thương hiệu tài chính
+        "Visa", "Mastercard", "PayPal", "American Express",
+        "JPMorgan Chase", "Goldman Sachs", "HSBC"
+    ];
+
+    document.getElementById("checkBtn").addEventListener("click", function () {
+        const productName = document.getElementById("productName").value;
+        const resultDiv = document.getElementById("result");
+        const lowerCaseProductName = productName.toLowerCase();
+
+        let foundTrademark = null;
+        for (const word of trademarkedWords) {
+            if (lowerCaseProductName.includes(word.toLowerCase())) {
+                foundTrademark = word;
+                break;
             }
-        });
+        }
+
+        if (foundTrademark) {
+            resultDiv.textContent = `Tên sản phẩm có chứa từ khóa thương hiệu bị bảo hộ: ${foundTrademark}`;
+            resultDiv.className = "result error";
+            resultDiv.style.display = "block";
+        } else {
+            resultDiv.textContent = "Tên sản phẩm không vi phạm thương hiệu.";
+            resultDiv.className = "result success";
+            resultDiv.style.display = "block";
+        }
+    });
+
+    // Nút reset
+    document.getElementById("resetBtn").addEventListener("click", function () {
+        document.getElementById("productName").value = "";
+        const resultDiv = document.getElementById("result");
+        resultDiv.textContent = "";
+        resultDiv.style.display = "none";
     });
 </script>
+
 </body>
 </html>
