@@ -144,16 +144,15 @@
     function checkTrademark(name, trademarks) {
         const lowerCaseName = name.toLowerCase();
 
-        // Split the product name into individual words for more granular checking
-        const wordsInName = lowerCaseName.split(/\s+/);
-
         for (const trademark of trademarks) {
             const lowerCaseTrademark = trademark.toLowerCase();
-            const wordsInTrademark = lowerCaseTrademark.split(/\s+/);
+            
+            // Split the trademark into parts (e.g., Coca-Cola -> ["coca", "cola"])
+            const parts = lowerCaseTrademark.split(/[\s\-]+/);
 
-            // Check if any word from the trademark is found in the product name
-            for (const word of wordsInTrademark) {
-                if (wordsInName.includes(word)) {
+            // Check if any part of the trademark is found in the product name
+            for (const part of parts) {
+                if (lowerCaseName.includes(part)) {
                     return trademark;
                 }
             }
