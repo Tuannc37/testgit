@@ -109,34 +109,34 @@
     // JavaScript code to check trademarks
 
     const trademarkedWords = [
-        // Thương hiệu công nghệ
+        // Technology Brands
         "Apple", "Microsoft", "Google", "Facebook", "Instagram", "Twitter", "Amazon",
         "Netflix", "Tesla", "Intel", "Samsung",
 
-        // Thương hiệu giải trí
+        // Entertainment Brands
         "Disney", "Pixar", "Marvel", "Star Wars", "Warner Bros", "Universal Studios",
         "Nickelodeon", "HBO", "Sony", "Paramount", "DreamWorks",
 
-        // Nghệ sĩ và âm nhạc
+        // Music Artists
         "Taylor Swift", "Beyoncé", "Lady Gaga", "Justin Bieber", "Ariana Grande",
         "BTS", "Drake", "Rihanna",
 
-        // Thương hiệu thời trang
+        // Fashion Brands
         "Nike", "Adidas", "Puma", "Gucci", "Louis Vuitton", "Prada",
         "Chanel", "Versace", "Dior", "Balenciaga",
 
-        // Thương hiệu thực phẩm và nước giải khát
+        // Food & Beverage Brands
         "Coca-Cola", "Pepsi", "McDonald's", "Starbucks", "KFC", "Subway",
         "Nestlé", "Red Bull", "Heineken", "Budweiser",
 
-        // Thương hiệu xe hơi
+        // Automotive Brands
         "Ferrari", "Lamborghini", "Mercedes-Benz", "BMW", "Toyota",
         "Ford", "Volkswagen", "Porsche", "Audi", "Honda",
 
-        // Thương hiệu bán lẻ
+        // Retail Brands
         "Walmart", "Target", "IKEA", "H&M", "Zara", "Costco", "Alibaba", "eBay",
 
-        // Thương hiệu tài chính
+        // Financial Brands
         "Visa", "Mastercard", "PayPal", "American Express",
         "JPMorgan Chase", "Goldman Sachs", "HSBC"
     ];
@@ -147,9 +147,10 @@
         const lowerCaseProductName = productName.toLowerCase();
 
         let foundTrademark = null;
-        for (const word of trademarkedWords) {
-            if (lowerCaseProductName.includes(word.toLowerCase())) {
-                foundTrademark = word;
+        for (const phrase of trademarkedWords) {
+            const words = phrase.toLowerCase().split(' ');
+            if (words.every(word => lowerCaseProductName.includes(word))) {
+                foundTrademark = phrase;
                 break;
             }
         }
@@ -165,7 +166,7 @@
         }
     });
 
-    // Nút reset
+    // Reset button functionality
     document.getElementById("resetBtn").addEventListener("click", function () {
         document.getElementById("productName").value = "";
         const resultDiv = document.getElementById("result");
