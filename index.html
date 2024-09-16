@@ -141,13 +141,21 @@
         "JPMorgan Chase", "Goldman Sachs", "HSBC"
     ];
 
-    function containsTrademark(name, trademarks) {
+    function checkTrademark(name, trademarks) {
         const lowerCaseName = name.toLowerCase();
+
+        // Split the product name into individual words for more granular checking
+        const wordsInName = lowerCaseName.split(/\s+/);
+
         for (const trademark of trademarks) {
             const lowerCaseTrademark = trademark.toLowerCase();
-            const words = lowerCaseTrademark.split(' ');
-            if (words.every(word => lowerCaseName.includes(word))) {
-                return trademark;
+            const wordsInTrademark = lowerCaseTrademark.split(/\s+/);
+
+            // Check if any word from the trademark is found in the product name
+            for (const word of wordsInTrademark) {
+                if (wordsInName.includes(word)) {
+                    return trademark;
+                }
             }
         }
         return null;
@@ -157,7 +165,7 @@
         const productName = document.getElementById("productName").value;
         const resultDiv = document.getElementById("result");
 
-        const foundTrademark = containsTrademark(productName, trademarkedWords);
+        const foundTrademark = checkTrademark(productName, trademarkedWords);
 
         if (foundTrademark) {
             resultDiv.textContent = `Tên sản phẩm có chứa từ khóa thương hiệu bị bảo hộ: ${foundTrademark}`;
