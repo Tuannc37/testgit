@@ -23,7 +23,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
             text-align: center;
         }
 
@@ -38,55 +38,95 @@
         }
 
         .form-group {
-            display: flex;
-            gap: 10px;
             margin-bottom: 20px;
         }
 
         input[type="text"] {
-            flex: 1;
+            width: calc(100% - 22px);
             padding: 10px;
             border-radius: 4px;
             border: 1px solid #ccc;
             font-size: 16px;
+            margin-bottom: 10px;
         }
 
         button {
             padding: 10px 20px;
-            background-color: #28a745;
-            color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            margin: 5px;
         }
 
-        button:hover {
+        #checkBtn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        #checkBtn:hover {
             background-color: #218838;
+        }
+
+        #clearErrorsBtn {
+            background-color: #ff7f50;
+            color: white;
+        }
+
+        #clearErrorsBtn:hover {
+            background-color: #ff6347;
+        }
+
+        #copyBtn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #copyBtn:hover {
+            background-color: #0056b3;
+        }
+
+        #resetBtn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        #resetBtn:hover {
+            background-color: #c82333;
         }
 
         .result {
             font-size: 16px;
-            color: #fff;
             padding: 10px;
             border-radius: 4px;
             display: none;
+            white-space: pre-wrap;
+            text-align: left;
+            width: 100%;
+            margin-top: 20px;
         }
 
         .success {
             background-color: #28a745;
+            color: #fff;
         }
 
         .error {
             background-color: #dc3545;
+            color: #fff;
         }
 
-        .reset-button {
-            background-color: #ff7f50;
+        .highlight {
+            background-color: #ffdddd;
+            border: 1px solid #ffcccc;
+            padding: 2px;
         }
 
-        .reset-button:hover {
-            background-color: #ff6347;
+        .error-details {
+            margin-top: 10px;
+            font-size: 18px;
+            color: #000;
+            text-align: left;
         }
     </style>
 </head>
@@ -98,45 +138,34 @@
 
     <div class="form-group">
         <input type="text" id="productName" placeholder="Enter product name">
+    </div>
+
+    <div class="form-group">
         <button id="checkBtn">Check Trademark</button>
-        <button id="resetBtn" class="reset-button">Reset</button>
+        <button id="clearErrorsBtn">Clear Errors</button>
+        <button id="copyBtn">Copy</button>
+        <button id="resetBtn">Reset</button>
     </div>
 
     <div id="result" class="result"></div>
+    <div id="errorDetails" class="error-details"></div>
 </div>
 
 <script>
-    // JavaScript code to check trademarks
-
     const trademarkedWords = [
-        // Technology Brands
         "Apple", "Microsoft", "Google", "Facebook", "Instagram", "Twitter", "Amazon",
         "Netflix", "Tesla", "Intel", "Samsung",
-
-        // Entertainment Brands
         "Disney", "Pixar", "Marvel", "Star Wars", "Warner Bros", "Universal Studios",
         "Nickelodeon", "HBO", "Sony", "Paramount", "DreamWorks",
-
-        // Music Artists
         "Taylor Swift", "Beyoncé", "Lady Gaga", "Justin Bieber", "Ariana Grande",
         "BTS", "Drake", "Rihanna",
-
-        // Fashion Brands
         "Nike", "Adidas", "Puma", "Gucci", "Louis Vuitton", "Prada",
         "Chanel", "Versace", "Dior", "Balenciaga",
-
-        // Food & Beverage Brands
         "Coca-Cola", "Pepsi", "McDonald's", "Starbucks", "KFC", "Subway",
         "Nestlé", "Red Bull", "Heineken", "Budweiser",
-
-        // Automotive Brands
         "Ferrari", "Lamborghini", "Mercedes-Benz", "BMW", "Toyota",
         "Ford", "Volkswagen", "Porsche", "Audi", "Honda",
-
-        // Retail Brands
         "Walmart", "Target", "IKEA", "H&M", "Zara", "Costco", "Alibaba", "eBay",
-
-        // Financial Brands
         "Visa", "Mastercard", "PayPal", "American Express",
         "JPMorgan Chase", "Goldman Sachs", "HSBC"
     ];
@@ -145,46 +174,84 @@
         const lowerCaseName = name.toLowerCase();
         const foundTrademarks = [];
 
-        for (const trademark of trademarks) {
+        trademarks.forEach(trademark => {
             const lowerCaseTrademark = trademark.toLowerCase();
             const parts = lowerCaseTrademark.split(/[\s\-]+/);
 
-            for (const part of parts) {
-                if (lowerCaseName.includes(part)) {
-                    if (!foundTrademarks.includes(trademark)) {
-                        foundTrademarks.push(trademark);
-                    }
-                    break;
-                }
+            // Check for any part of the trademark appearing anywhere in the input name
+            let found = parts.some(part => lowerCaseName.includes(part));
+            if (found) {
+                foundTrademarks.push(trademark);
             }
-        }
+        });
 
         return foundTrademarks;
+    }
+
+    function highlightTrademarks(text, trademarks) {
+        let highlightedText = text;
+
+        trademarks.forEach(trademark => {
+            const regex = new RegExp(`(${trademark.split(/[\s\-]+/).join('|')})`, 'gi');
+            highlightedText = highlightedText.replace(regex, '<span class="highlight">$1</span>');
+        });
+
+        return highlightedText;
     }
 
     document.getElementById("checkBtn").addEventListener("click", function () {
         const productName = document.getElementById("productName").value;
         const resultDiv = document.getElementById("result");
+        const errorDetailsDiv = document.getElementById("errorDetails");
 
         const foundTrademarks = checkTrademarks(productName, trademarkedWords);
 
         if (foundTrademarks.length > 0) {
-            resultDiv.textContent = `Tên sản phẩm có chứa từ khóa thương hiệu bị bảo hộ: ${foundTrademarks.join(', ')}`;
+            resultDiv.innerHTML = `Tên sản phẩm có chứa từ khóa thương hiệu bị bảo hộ: ${foundTrademarks.join(', ')}`;
             resultDiv.className = "result error";
             resultDiv.style.display = "block";
+            errorDetailsDiv.innerHTML = `Từ khóa bị lỗi: ${highlightTrademarks(productName, foundTrademarks)}`;
+            errorDetailsDiv.style.display = "block";
         } else {
-            resultDiv.textContent = "Tên sản phẩm không vi phạm thương hiệu.";
+            resultDiv.innerHTML = "Tên sản phẩm không vi phạm thương hiệu.";
             resultDiv.className = "result success";
             resultDiv.style.display = "block";
+            errorDetailsDiv.style.display = "none";
         }
     });
 
-    // Reset button functionality
+    document.getElementById("clearErrorsBtn").addEventListener("click", function () {
+        const productName = document.getElementById("productName").value;
+        let cleanedText = productName;
+
+        const foundTrademarks = checkTrademarks(productName, trademarkedWords);
+        foundTrademarks.forEach(trademark => {
+            const regex = new RegExp(`(${trademark.split(/[\s\-]+/).join('|')})`, 'gi');
+            cleanedText = cleanedText.replace(regex, '');
+        });
+
+        document.getElementById("productName").value = cleanedText.trim();
+        document.getElementById("result").innerHTML = "Các từ vi phạn thương hiệu đã được xóa !";
+        document.getElementById("result").className = "result success";
+        document.getElementById("result").style.display = "block";
+        document.getElementById("errorDetails").style.display = "none";
+    });
+
+    document.getElementById("copyBtn").addEventListener("click", function () {
+        const productName = document.getElementById("productName").value;
+        navigator.clipboard.writeText(productName).then(function () {
+            alert("Đoạn văn bản đã được sao chép!");
+        }).catch(function (error) {
+            console.error("Không thể sao chép văn bản: ", error);
+        });
+    });
+
     document.getElementById("resetBtn").addEventListener("click", function () {
         document.getElementById("productName").value = "";
         const resultDiv = document.getElementById("result");
-        resultDiv.textContent = "";
+        resultDiv.innerHTML = "";
         resultDiv.style.display = "none";
+        document.getElementById("errorDetails").style.display = "none";
     });
 </script>
 
