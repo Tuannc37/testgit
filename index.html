@@ -141,19 +141,23 @@
         "JPMorgan Chase", "Goldman Sachs", "HSBC"
     ];
 
+    function containsTrademark(name, trademarks) {
+        const lowerCaseName = name.toLowerCase();
+        for (const trademark of trademarks) {
+            const lowerCaseTrademark = trademark.toLowerCase();
+            const words = lowerCaseTrademark.split(' ');
+            if (words.every(word => lowerCaseName.includes(word))) {
+                return trademark;
+            }
+        }
+        return null;
+    }
+
     document.getElementById("checkBtn").addEventListener("click", function () {
         const productName = document.getElementById("productName").value;
         const resultDiv = document.getElementById("result");
-        const lowerCaseProductName = productName.toLowerCase();
 
-        let foundTrademark = null;
-        for (const phrase of trademarkedWords) {
-            const words = phrase.toLowerCase().split(' ');
-            if (words.every(word => lowerCaseProductName.includes(word))) {
-                foundTrademark = phrase;
-                break;
-            }
-        }
+        const foundTrademark = containsTrademark(productName, trademarkedWords);
 
         if (foundTrademark) {
             resultDiv.textContent = `Tên sản phẩm có chứa từ khóa thương hiệu bị bảo hộ: ${foundTrademark}`;
